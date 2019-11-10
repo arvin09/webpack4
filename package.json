@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npx webpack-dev-server --config=config/webpack.dev.js",
     "build": "npx webpack --config=config/webpack.dev.js",
-    "dev": "npx nodemon --inspect --watch config --watch src/server src/server/main.js"
+    "dev": "npx nodemon --inspect --watch config --watch src/server src/server/main.js",
+    "prod": "node src/server/main.js"
   },
   "keywords": [],
   "author": "",

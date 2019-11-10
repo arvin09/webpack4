@@ -1,26 +1,34 @@
 import express from 'express';
+const server = express();
 import path from 'path';
 
-const server = express();
+const isProd = process.env.NODE_ENV === 'production';
+if (isProd) {
+    const webpack = require("webpack");
+    const config = require('../../config/webpack.dev');
+    const compiler = webpack(config);
 
-const webpack = require("webpack");
-const config = require('../../config/webpack.dev');
-const compiler = webpack(config);
+    const webpackMiddleware = require("webpack-dev-middleware")(
+        compiler,
+        config.devServer
+    )
 
-const webpackMiddleware = require("webpack-dev-middleware")(
-    compiler,
-    config.devServer
-)
+    const webpackHotMiddleware = require("webpack-hot-middleware")(
+        compiler,
+        config.devServer
+    )
 
-const webpackHotMiddleware = require("webpack-hot-middleware")(compiler);
+    server.use(webpackHotMiddleware);
+    server.use(webpackMiddleware);
+}
 
-server.use(webpackHotMiddleware);
-server.use(webpackMiddleware);
 
 const staticMiddleware = express.static('dist');
 
 server.use(staticMiddleware);
 
-server.listen("9090", () => {
-    console.log('server is listening on port 9090');
+const PORT = process.env.PORT || 9090;
+
+server.listen(PORT, () => {
+    console.log(`server is listening on  http://localhost:${PORT}`);
 })

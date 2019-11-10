@@ -6,7 +6,7 @@ module.exports = {
     entry: {
         main: "./src/main.js"
     },
-    mode: "development",
+    mode: "production",
     output: {
         filename: "[name]-bundle.js",
         path: path.resolve(__dirname, "../dist"),
@@ -104,7 +104,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
+        // new webpack.HotModuleReplacementPlugin(),
         new VueLoaderPlugin(),
         new HTMLWebpackPlugin({
             template: './src/index.html'
