@@ -1,41 +1,20 @@
 const path = require("path");
 const webpack = require("webpack");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
-const { VueLoaderPlugin } = require("vue-loader");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const {VueLoaderPlugin} = require("vue-loader");
+const MinifyPlugin = require("babel-minify-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
+const BrotliPlugin = require("brotli-webpack-plugin");
 module.exports = {
     entry: {
-        main: [
-            "babel-runtime/regenerator",
-            "webpack-hot-middleware/client?reload=true",
-            "./src/main.js"
-        ]
+        main: "./src/main.js"
     },
-    mode: "development",
+    mode: "production",
     output: {
         filename: "[name]-bundle.js",
         path: path.resolve(__dirname, "../dist"),
         publicPath: "/"
     },
-    devServer: {
-        contentBase: "dist",
-        overlay: true,
-        hot: true,
-        stats: {
-            colors: true
-        }
-    },
-    optimization: {
-        splitChunks: {
-            chunks: "all",
-            cacheGroups: {
-                vendor: {
-                    name: "vendor"
-                }
-            }
-        }
-    },
-    devtool: 'source-map',
     resolve: {
         alias: {
             vue$: "vue/dist/vue.esm.js"
@@ -88,15 +67,6 @@ module.exports = {
             {
                 test: /\.html$/,
                 use: [
-                    // {
-                    //     loader: "file-loader",
-                    //     options: {
-                    //         name: "[name].html" // renames the files as the name of the file
-                    //     }
-                    // },
-                    // {
-                    //     loader: "extract-loader" // creates sperate file and not include in bundle
-                    // },
                     {
                         loader: "html-loader", // lints the html
                         options: {
@@ -119,18 +89,19 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
         new VueLoaderPlugin(),
         new HTMLWebpackPlugin({
             template: './src/index.html'
         }),
         new webpack.DefinePlugin({
             "process.env": {
-                NODE_ENV: JSON.stringify("development")
+                NODE_ENV: JSON.stringify("production")
             }
         }),
-        new BundleAnalyzerPlugin({
-            generateStatsFile:true
-        })
+        new MinifyPlugin(),
+        new CompressionPlugin({
+            algorithm: 'gzip'
+        }),
+        new BrotliPlugin()
     ]
 }

@@ -3,7 +3,9 @@ const server = express();
 import path from 'path';
 
 const isProd = process.env.NODE_ENV === 'production';
-if (isProd) {
+console.log('NODE_ENV server', process.env.NODE_ENV);
+
+if (!isProd) {
     const webpack = require("webpack");
     const config = require('../../config/webpack.dev');
     const compiler = webpack(config);
@@ -23,12 +25,17 @@ if (isProd) {
 }
 
 
-const staticMiddleware = express.static('dist');
+// const staticMiddleware = express.static('dist');
+// server.use(staticMiddleware);
 
-server.use(staticMiddleware);
-
-const PORT = process.env.PORT || 9090;
+const expressStaticGzip = require("express-static-gzip")
+server.use(
+    expressStaticGzip("dist",{
+        enableBrotli: true
+    }
+));
+const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
-    console.log(`server is listening on  http://localhost:${PORT}`);
+    console.log(`server is listening on  http://localhost:${PORT} in ${process.env.NODE_ENV}`);
 })
